@@ -11,19 +11,18 @@ function requestRushingStats(pageNum, pageSize, query) {
     pageNum,
     pageSize,
     query,
-
-
-// TODO determine when to make the Back and Next buttons disabled
-
-
+    enableBackButton: false,
+    enableNextButton: false,
   }
 }
 
-function receiveRushingStats(rushingStats) {
+function receiveRushingStats(json) {
   return {
     type: COMPLETED_FETCH_RUSHING_STATS,
-    rushingStats,
     loadingRushingStats: false,
+    rushingStats: json.stats,
+    enableBackButton: json.enable_back,
+    enableNextButton: json.enable_next,
   }
 }
 
@@ -32,11 +31,11 @@ export function fetchRushingStats(pageNum, pageSize, query) {
     dispatch(requestRushingStats(pageNum, pageSize, query))
     return axios({
         method: 'get',
-        url: '/rushings/show_stats',
+        url: '/rushing/show_stats',
         baseURL: baseUrl(),
         params: {
-          pageNum,
-          pageSize,
+          page_num: pageNum,
+          page_size: pageSize,
           query
         }
       })

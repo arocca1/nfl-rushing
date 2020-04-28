@@ -9,6 +9,8 @@ function rushingStatsByPlayer(state = {
     pageNum: 1,
     pageSize: 10,
     query: '',
+    enableBackButton: false,
+    enableNextButton: false,
   },
   action
 ) {
@@ -20,11 +22,15 @@ function rushingStatsByPlayer(state = {
         pageNum: action.pageNum,
         pageSize: action.pageSize,
         query: action.query,
+        enableBackButton: action.enableBackButton,
+        enableNextButton: action.enableNextButton,
       })
     case COMPLETED_FETCH_RUSHING_STATS:
       return Object.assign({}, state, {
         rushingStats: action.rushingStats,
         loadingRushingStats: false,
+        enableBackButton: action.enableBackButton,
+        enableNextButton: action.enableNextButton,
       })
     default:
       return state

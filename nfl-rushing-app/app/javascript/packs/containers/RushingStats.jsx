@@ -71,6 +71,7 @@ RushingStats.defaultProps = {
 }
 
 RushingStats.propTypes = {
+  fetchRushingStats: PropTypes.func.isRequired,
   loadingRushingStats: PropTypes.bool.isRequired,
   rushingStats: PropTypes.array,
   pageNum: PropTypes.number.isRequired,
@@ -88,6 +89,8 @@ const mapStateToProps = (state) => {
     pageNum,
     pageSize,
     query,
+    enableBackButton,
+    enableNextButton,
   } = rushingsReducer ||
     {
       loadingRushingStats: true,
@@ -95,6 +98,8 @@ const mapStateToProps = (state) => {
       pageNum: 1,
       pageSize: 10,
       query: '',
+      enableBackButton: false,
+      enableNextButton: false,
     }
   return {
     loadingRushingStats,
@@ -102,6 +107,8 @@ const mapStateToProps = (state) => {
     pageNum,
     pageSize,
     query,
+    enableBackButton,
+    enableNextButton,
   }
 }
 
@@ -111,4 +118,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapStateToProps)(RushingStats);
+export default connect(mapStateToProps, mapDispatchToProps)(RushingStats);

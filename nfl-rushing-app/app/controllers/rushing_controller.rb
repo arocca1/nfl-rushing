@@ -3,7 +3,7 @@ require 'will_paginate'
 class RushingController < ApplicationController
   def show_stats
     # expect params of :page_num, :order_dir, :page_size, :sort_by, :download_format, :query
-    stats = Player.joins([:team, :position, :rushing]).paginate(page: params[:page_num], per_page: params[:page_size])
+    stats = Player.joins([:team, :position, :rushing])
 
     if params[:sort_by] && params[:order_dir]
       rushing_col = Rushing.arel_table[params[:sort_by].to_sym]
@@ -21,6 +21,11 @@ class RushingController < ApplicationController
 
 
     # TODO stream this back
-    render json: stats, status: 200
+    res = {
+      stats: stats.paginate(page: params[:page_num], per_page: params[:page_size]),
+      enable_back: params[:page_num].to_i > 1,
+      enable_next: stats.paginate(page: params[:page_num].to_i + 1, per_page: params[:page_size]).count > 0,
+    }
+    render json: res, status: 200
   end
 end

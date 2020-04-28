@@ -5,7 +5,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import Table from 'react-bootstrap/Table'
 
 const RushingStatsTable = props => {
-  if (this.props.loadingRushingStats) {
+  if (props.loadingRushingStats) {
    return <Spinner key="TableSpinner" animation="border" />
   }
 
