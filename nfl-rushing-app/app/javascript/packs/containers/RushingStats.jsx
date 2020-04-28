@@ -27,7 +27,8 @@ class RushingStats extends React.Component {
   }
 
   handleQueryChange(event) {
-    this.props.fetchRushingStats(this.props.pageNum, this.props.pageSize, event.target.value);
+    // go to page 1 since setting a new query
+    this.props.fetchRushingStats(1, this.props.pageSize, event.target.value);
   }
 
   handleDownload(event) {
@@ -66,6 +67,7 @@ class RushingStats extends React.Component {
 
 RushingStats.defaultProps = {
   loadingRushingStats: true,
+  rushingStats: [],
   enableBackButton: false,
   enableNextButton: false,
 }
