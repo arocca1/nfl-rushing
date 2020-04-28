@@ -13,12 +13,14 @@ class JsonParser
     obj.each do |player_stat|
       team = Team.find_or_create_by(name: player_stat[:Team])
       position = Position.find_or_create_by(name: player_stat[:Pos])
-      player = team.players.find_or_create_by(name: player_stat[:Player], position_id: position.id)
-      rushing = Rushing.new(player_id: player.id)
+      player = position.players.find_or_create_by(name: player_stat[:Player])
+      # player could be on different team
+      player.update(team_id: team.id)
+      rushing = Rushing.find_or_initialize_by(player_id: player.id)
       Rushing::DISPLAY_NAME_TO_COLUMN.each do |display_name, col|
         if display_name == :Lng
           rushing.is_longest_td = player_stat[:Lng][-1] == 'T'
-          rushing.longest = player_stat[:Lng][..-2]
+          rushing.longest = (rushing.is_longest_td ? player_stat[:Lng][..-2] : player_stat[:Lng]).to_i
         else
           rushing.send("#{col}=", player_stat[display_name])
         end

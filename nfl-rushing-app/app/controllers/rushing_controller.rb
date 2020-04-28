@@ -21,7 +21,7 @@ class RushingController < ApplicationController
 
     # although this looks like a SQL injection, it's not. matches sanitizes
     stats = stats.where(Player.arel_table[:name].matches("%#{params[:query]}%")) if params[:query]
-    num_pages = (stats.count * 1.0 / params[:page_size].to_i).ceil
+
     respond_to do |format|
       format.json do
         # no need to explicitly stream this block explicitly since we are paginating at the database level
@@ -29,7 +29,7 @@ class RushingController < ApplicationController
           stats: stats.paginate(page: params[:page_num], per_page: params[:page_size])
                       .select(RUSHING_SELECT),
           enable_back: params[:page_num].to_i > 1,
-          enable_next: params[:page_num].to_i < num_pages,
+          enable_next: params[:page_num].to_i < (stats.count * 1.0 / params[:page_size].to_i).ceil,
         }
         return render json: res
       end
@@ -42,7 +42,7 @@ class RushingController < ApplicationController
           headers["X-Accel-Buffering"] = "no"
           headers["Content-Type"] = "text/csv"
           headers["Last-Modified"] = generation_time
-          self.response_body = formatter.build_csv_enumerator(stats.select(RUSHING_SELECT), params[:page_size].to_i, num_pages)
+          self.response_body = formatter.build_csv_enumerator(stats.select(RUSHING_SELECT))
         end
       end
     end
