@@ -39,7 +39,7 @@ export function fetchRushingStats(pageNum, pageSize, query) {
           query
         }
       })
-      .then(response => response.json())
+      .then(response => response.data)
       .then(json => dispatch(receiveRushingStats(json)))
   }
 }
