@@ -7,7 +7,7 @@ export const COMPLETED_FETCH_RUSHING_STATS = "COMPLETED_FETCH_RUSHING_STATS";
 export const DOWNLOAD_RUSHING_FILE = "DOWNLOAD_RUSHING_FILE";
 export const COMPLETED_DOWNLOAD_RUSHING_FILE = "COMPLETED_DOWNLOAD_RUSHING_FILE";
 
-function requestRushingStats(pageNum, pageSize, query, downloadFormat) {
+function requestRushingStats(pageNum, pageSize, query, sortBy, orderDir) {
   return {
     type: FETCH_RUSHING_STATS,
     loadingRushingStats: true,
@@ -16,6 +16,8 @@ function requestRushingStats(pageNum, pageSize, query, downloadFormat) {
     query,
     enableBackButton: false,
     enableNextButton: false,
+    sortBy,
+    orderDir,
   }
 }
 
@@ -45,13 +47,19 @@ function receiveDownloadFile(downloadFormat, data) {
   }
 }
 
-function doFetchStats(pageNum, pageSize, query, downloadFormat) {
+function doFetchStats(pageNum, pageSize, query, downloadFormat, sortBy, orderDir) {
   let params = { query }
   if (pageNum) {
     params.page_num = pageNum
   }
   if (pageSize) {
     params.page_size = pageSize
+  }
+  if (sortBy) {
+    params.sort_by = sortBy
+  }
+  if (orderDir) {
+    params.order_dir = orderDir
   }
 
   return axios({
@@ -68,18 +76,18 @@ function doFetchStats(pageNum, pageSize, query, downloadFormat) {
     .then(response => response.data)
 }
 
-export function fetchRushingStats(pageNum, pageSize, query) {
+export function fetchRushingStats(pageNum, pageSize, query, sortBy, orderDir) {
   return dispatch => {
-    dispatch(requestRushingStats(pageNum, pageSize, query))
-    return doFetchStats(pageNum, pageSize, query)
+    dispatch(requestRushingStats(pageNum, pageSize, query, sortBy, orderDir))
+    return doFetchStats(pageNum, pageSize, query, undefined, sortBy, orderDir)
       .then(json => dispatch(receiveRushingStats(json)))
   }
 }
 
-export function fetchRushingStatsCsv(pageSize, query, downloadFormat) {
+export function fetchRushingStatsCsv(pageSize, query, downloadFormat, sortBy, orderDir) {
   return dispatch => {
     dispatch(requestDownloadStats(downloadFormat))
-    return doFetchStats(undefined, pageSize, query, downloadFormat)
+    return doFetchStats(undefined, pageSize, query, downloadFormat, sortBy, orderDir)
       .then(data => dispatch(receiveDownloadFile(downloadFormat, data)))
   }
 }

@@ -13,11 +13,11 @@ const RushingStatHeader = props => {
         <th>Pos</th>
         <th>Att/G</th>
         <th>Att</th>
-        <th>Yds</th>
+        <th>Yds<img src='sorting-arrow.png' onClick={props.handleYardsSort} /></th>
         <th>Avg</th>
         <th>Yds/G</th>
-        <th>TD</th>
-        <th>Lng</th>
+        <th>TD<img src='sorting-arrow.png' onClick={props.handleTdsSort} /></th>
+        <th>Lng<img src='sorting-arrow.png' onClick={props.handleLongestRunSort} /></th>
         <th>1st</th>
         <th>1st%</th>
         <th>20+</th>
@@ -29,9 +29,9 @@ const RushingStatHeader = props => {
 }
 
 const PlayerRushingStat = props => {
-  const lng = props.longest ? `${props.longest}${props.is_longest_td ? 'T' : ''}` : ''
+  const lng = props.is_longest_td ? `${props.longest}${props.is_longest_td ? 'T' : ''}` : ''
   return (
-    <tr key={`${props.name}Row`}>
+    <tr>
       <td>{props.name}</td>
       <td>{props.team_name}</td>
       <td>{props.pos}</td>
@@ -58,9 +58,13 @@ const RushingStatsTable = props => {
 
   return (
     <Table key="TableWithResults" responsive="xl" striped>
-      <RushingStatHeader />
+      <RushingStatHeader
+        handleYardsSort={props.handleYardsSort}
+        handleTdsSort={props.handleTdsSort}
+        handleLongestRunSort={props.handleLongestRunSort}
+      />
       <tbody>
-        { props.rushingStats.map(stat => <PlayerRushingStat {...stat} />) }
+        { props.rushingStats.map(stat => <PlayerRushingStat key={`${stat.name}Row`} {...stat} />) }
       </tbody>
     </Table>
   )
@@ -74,6 +78,9 @@ RushingStatsTable.defaultProps = {
 RushingStatsTable.propTypes = {
   loadingRushingStats: PropTypes.bool.isRequired,
   rushingStats: PropTypes.array.isRequired,
+  handleYardsSort: PropTypes.func.isRequired,
+  handleTdsSort: PropTypes.func.isRequired,
+  handleLongestRunSort: PropTypes.func.isRequired,
 }
 
 export default RushingStatsTable
