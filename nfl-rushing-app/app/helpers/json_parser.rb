@@ -1,5 +1,6 @@
 require 'yajl'
 
+# assume loaded in Rails environment
 class JsonParser
   def initialize
     @parser = Yajl::Parser.new(symbolize_keys: true)
