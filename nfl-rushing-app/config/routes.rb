@@ -1,3 +1,7 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :rushing do
+    collection do
+      get 'show_stats'
+    end
+  end
 end
