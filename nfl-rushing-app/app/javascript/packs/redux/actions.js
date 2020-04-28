@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { baseUrl } from '../util'
+import { saveAs } from 'file-saver';
 
 export const FETCH_RUSHING_STATS = "FETCH_RUSHING_STATS";
 export const COMPLETED_FETCH_RUSHING_STATS = "COMPLETED_FETCH_RUSHING_STATS";
@@ -36,7 +37,8 @@ function requestDownloadStats(downloadFormat) {
   }
 }
 
-function receiveDownloadFile() {
+function receiveDownloadFile(downloadFormat, data) {
+  saveAs(new Blob([data], {type: "text/csv;charset=utf-8"}), `rushing_stats.${downloadFormat}`)
   return {
     type: COMPLETED_DOWNLOAD_RUSHING_FILE,
     downloadingFile: false,
@@ -61,8 +63,7 @@ function doFetchStats(pageNum, pageSize, query, downloadFormat) {
         'Content-Type': `application/${downloadFormat || 'json'}; charset=utf-8`,
       },
       params: params,
-      data: {},
-      //responseType: downloadFormat ? 'blob' : 'json',
+      responseType: downloadFormat ? 'blob' : 'json',
     })
     .then(response => response.data)
 }
@@ -75,10 +76,10 @@ export function fetchRushingStats(pageNum, pageSize, query) {
   }
 }
 
-export function fetchRushingStatsCsv(query, downloadFormat) {
+export function fetchRushingStatsCsv(pageSize, query, downloadFormat) {
   return dispatch => {
     dispatch(requestDownloadStats(downloadFormat))
-    return doFetchStats(undefined, undefined, query, downloadFormat)
-      .then(json => dispatch(receiveRushingStats()))
+    return doFetchStats(undefined, pageSize, query, downloadFormat)
+      .then(data => dispatch(receiveDownloadFile(downloadFormat, data)))
   }
 }

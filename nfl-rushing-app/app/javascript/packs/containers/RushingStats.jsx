@@ -32,7 +32,7 @@ class RushingStats extends React.Component {
   }
 
   handleDownload(event) {
-    this.props.fetchRushingStatsCsv(this.props.query, 'csv')
+    this.props.fetchRushingStatsCsv(this.props.pageSize, this.props.query, 'csv')
   }
 
   componentDidMount() {
@@ -46,7 +46,7 @@ class RushingStats extends React.Component {
 
     return (
       <div key="RushingStats">
-        <label style={{'margin-right': '10px'}}>Player name:
+        <label style={{'marginRight': '10px'}}>Player name:
           <input type="text" onChange={this.handleQueryChange} />
         </label>
         <Button variant="secondary" onClick={this.handleDownload} disabled={this.props.downloadingFile}>Download</Button>
@@ -119,7 +119,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   return {
     fetchRushingStats: (pageNum, pageSize, query) => dispatch(fetchRushingStats(pageNum, pageSize, query)),
-    fetchRushingStatsCsv: (query, downloadFormat) => dispatch(fetchRushingStatsCsv(query, downloadFormat)),
+    fetchRushingStatsCsv: (pageSize, query, downloadFormat) => dispatch(fetchRushingStatsCsv(pageSize, query, downloadFormat)),
   }
 }
 
