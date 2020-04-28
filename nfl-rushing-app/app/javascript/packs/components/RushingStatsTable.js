@@ -31,7 +31,7 @@ const RushingStatHeader = props => {
 const PlayerRushingStat = props => {
   const lng = props.longest ? `${props.longest}${props.is_longest_td ? 'T' : ''}` : ''
   return (
-    <tr>
+    <tr key={`${props.name}Row`}>
       <td>{props.name}</td>
       <td>{props.team_name}</td>
       <td>{props.pos}</td>

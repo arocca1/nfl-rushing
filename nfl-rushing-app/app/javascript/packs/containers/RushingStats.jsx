@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchRushingStats } from '../redux/actions'
+import { fetchRushingStats, fetchRushingStatsCsv } from '../redux/actions'
 
 import RushingStatsTable from '../components/RushingStatsTable'
 
@@ -32,12 +32,8 @@ class RushingStats extends React.Component {
   }
 
   handleDownload(event) {
-
-    // TODO handle download
-
+    this.props.fetchRushingStatsCsv(this.props.query, 'csv')
   }
-
-// maybe use componentDidReceiveProps to kick off requests
 
   componentDidMount() {
     // initial fetch
@@ -50,10 +46,10 @@ class RushingStats extends React.Component {
 
     return (
       <div key="RushingStats">
-        <label>Player name:
+        <label style={{'margin-right': '10px'}}>Player name:
           <input type="text" onChange={this.handleQueryChange} />
         </label>
-        <Button variant="secondary">Download</Button>
+        <Button variant="secondary" onClick={this.handleDownload} disabled={this.props.downloadingFile}>Download</Button>
         <RushingStatsTable loadingRushingStats={this.props.loadingRushingStats} rushingStats={this.props.rushingStats} />
         <ButtonGroup aria-label="Basic example">
           <Button variant="secondary" onClick={this.handlePageBack} disabled={disabledPrevious}>Previous</Button>
@@ -70,10 +66,12 @@ RushingStats.defaultProps = {
   rushingStats: [],
   enableBackButton: false,
   enableNextButton: false,
+  downloadingFile: false,
 }
 
 RushingStats.propTypes = {
   fetchRushingStats: PropTypes.func.isRequired,
+  fetchRushingStatsCsv: PropTypes.func.isRequired,
   loadingRushingStats: PropTypes.bool.isRequired,
   rushingStats: PropTypes.array,
   pageNum: PropTypes.number.isRequired,
@@ -81,6 +79,7 @@ RushingStats.propTypes = {
   query: PropTypes.string.isRequired,
   enableBackButton: PropTypes.bool.isRequired,
   enableNextButton: PropTypes.bool.isRequired,
+  downloadingFile: PropTypes.bool.isRequired,
 }
 
 const mapStateToProps = (state) => {
@@ -93,6 +92,7 @@ const mapStateToProps = (state) => {
     query,
     enableBackButton,
     enableNextButton,
+    downloadingFile,
   } = rushingsReducer ||
     {
       loadingRushingStats: true,
@@ -102,6 +102,7 @@ const mapStateToProps = (state) => {
       query: '',
       enableBackButton: false,
       enableNextButton: false,
+      downloadingFile: false,
     }
   return {
     loadingRushingStats,
@@ -111,12 +112,14 @@ const mapStateToProps = (state) => {
     query,
     enableBackButton,
     enableNextButton,
+    downloadingFile,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchRushingStats: (pageNum, pageSize, query) => dispatch(fetchRushingStats(pageNum, pageSize, query))
+    fetchRushingStats: (pageNum, pageSize, query) => dispatch(fetchRushingStats(pageNum, pageSize, query)),
+    fetchRushingStatsCsv: (query, downloadFormat) => dispatch(fetchRushingStatsCsv(query, downloadFormat)),
   }
 }
 

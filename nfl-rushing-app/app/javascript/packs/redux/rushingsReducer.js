@@ -1,6 +1,8 @@
 import {
   FETCH_RUSHING_STATS,
   COMPLETED_FETCH_RUSHING_STATS,
+  DOWNLOAD_RUSHING_FILE,
+  COMPLETED_DOWNLOAD_RUSHING_FILE,
 } from './actions'
 
 function rushingStatsByPlayer(state = {
@@ -11,6 +13,7 @@ function rushingStatsByPlayer(state = {
     query: '',
     enableBackButton: false,
     enableNextButton: false,
+    downloadingFile: false,
   },
   action
 ) {
@@ -31,6 +34,11 @@ function rushingStatsByPlayer(state = {
         loadingRushingStats: false,
         enableBackButton: action.enableBackButton,
         enableNextButton: action.enableNextButton,
+      })
+    case DOWNLOAD_RUSHING_FILE:
+    case COMPLETED_DOWNLOAD_RUSHING_FILE:
+      return Object.assign({}, state, {
+        downloadingFile: action.downloadingFile,
       })
     default:
       return state
