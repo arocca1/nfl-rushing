@@ -30,15 +30,26 @@ The frontend of the server is written in React, backed by Redux.
 
 
 ## Installing and Running
-
+To set up the database and appropriate user, run the following script:
+```
+script/set_up_environment.sh
+```
+It will also parse the rushing.json file into the Postgres database
 
 ## Running Tests
-
+To run the Rails tests:
+```
+bundle exec rspec spec
+```
 
 ## Design Decisions
-
+- why did i include the password?
+- writing in React? Why?
+- Why did I submit per query change?
+- File saver use
 
 ## Future Improvements
 * Dockerizing the environment and startup. That would make management and startup much less manual
 * More extensive and explicit React testing, especially more complete Redux testing. The crux of the front-end logic is in the actions and reducers
 * Implement debouncing for the query search (could be done through a delay). It can be expensive to kick off a request per query change
+* Restructure the CSV file download to not download an attachment in-browser
