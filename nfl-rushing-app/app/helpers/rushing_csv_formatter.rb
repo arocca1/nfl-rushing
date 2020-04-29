@@ -17,7 +17,7 @@ class RushingCsvFormatter < RushingDownloadFormatter
     csv_headers_map.map { |header, col| rushing_stat.send(col) }
   end
 
-  def self.build_csv_enumerator(player_rushing_relation, select_clause, order_clause)
+  def self.build_csv_enumerator(player_rushing_relation, select_clause, order_clause = nil)
     csv_headers_map = self.get_csv_header
     Enumerator.new do |y|
       y << CSV.generate_line(csv_headers_map.keys)

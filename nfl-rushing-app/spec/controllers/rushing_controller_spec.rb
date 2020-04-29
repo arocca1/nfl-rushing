@@ -1,5 +1,10 @@
 require "rails_helper"
 require 'csv'
+require 'support/csv_formatting_helper'
+
+RSpec.configure do |c|
+  c.include CsvFormattingHelper
+end
 
 RSpec.describe RushingController, type: :controller do
   describe 'GET show_stats' do
@@ -151,23 +156,6 @@ RSpec.describe RushingController, type: :controller do
         get :show_stats, params: { page_num: 1, page_size: 1, sort_by: 'yards', order_dir: 'asc' }, format: 'json'
         expect(response.body).to eq(expected_results)
       end
-    end
-
-    def format_for_csv_output(player, csv_headers_map)
-      CSV.generate_line(
-        csv_headers_map.map do |header, col|
-          case header
-          when 'Player'
-            player.name
-          when 'Team'
-            player.team.name
-          when 'Pos'
-            player.position.name
-          else
-            player.rushing.send(col)
-          end
-        end
-      )
     end
 
     context 'CSV format' do
