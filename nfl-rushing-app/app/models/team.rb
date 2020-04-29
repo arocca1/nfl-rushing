@@ -7,4 +7,6 @@
 #
 class Team < ApplicationRecord
   has_many :players, inverse_of: :team
+
+  validates :name, uniqueness: true
 end

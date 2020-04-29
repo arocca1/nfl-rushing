@@ -7,4 +7,6 @@
 #
 class Position < ApplicationRecord
   has_many :players, inverse_of: :position
+
+  validates :name, uniqueness: true
 end
