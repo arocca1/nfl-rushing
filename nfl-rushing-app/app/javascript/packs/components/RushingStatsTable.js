@@ -29,7 +29,6 @@ const RushingStatHeader = props => {
 }
 
 const PlayerRushingStat = props => {
-  const lng = props.is_longest_td ? `${props.longest}${props.is_longest_td ? 'T' : ''}` : ''
   return (
     <tr>
       <td>{props.name}</td>
@@ -41,7 +40,7 @@ const PlayerRushingStat = props => {
       <td>{props.yards_per_attempt}</td>
       <td>{props.yards_per_game}</td>
       <td>{props.tds}</td>
-      <td>{lng}</td>
+      <td>{`${props.longest}${props.is_longest_td ? 'T' : ''}`}</td>
       <td>{props.first_downs}</td>
       <td>{props.first_down_percentage}</td>
       <td>{props.runs_twenty_plus}</td>
