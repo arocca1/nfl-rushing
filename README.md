@@ -27,20 +27,21 @@ The backend of the server is a Rails 6 application using Ruby 2.7
 The frontend of the server is written in React, backed by Redux.
 
 ## Primary backend route
-There is one main get route for fetching statistics. It handles both the JSON (web-side) and CSV fetching.
+There is one main get route for fetching statistics. It handles both the JSON (web-side) and CSV fetching. Specifically, it dictates the response format by using the 'Accept' header.
+
 `GET show_stats`
 
 | Parameter | Parameter Description               | Type   | Expected values   | Required |
-| ---------:| -----------------------------------:|-------:| -----------------:| --------:|
+| ----------| ------------------------------------|--------| ------------------| ---------|
 | page_num  | The page number of data to fetch    | int    | >= 1              | yes      |
 | page_size | The size of pages                   | int    | >= 1              | yes      |
 | sort_by   | The column to sort by               | string | yards/tds/longest | no       |
 | order_dir | The ordering of the sorting         | string | asc/desc          | no       |
-| query     | The query to filter results by name | string | <any value>       | no       |
+| query     | The query to filter results by name | string | &lt;any value&gt; | no       |
 
 JSON Returns:
 | Output      | Output Description                                                               | Type   |
-| -----------:| --------------------------------------------------------------------------------:|-------:|
+| ------------| ---------------------------------------------------------------------------------|--------|
 | stats       | An array of the fetched rushing stat                                             | array  |
 | enable_back | Whether we should enable fetching the page before, i.e. is there an earlier page | bool   |
 | enable_next | Whether we should enable fetching the next page, i.e. is there a later page      | bool   |
@@ -129,10 +130,15 @@ bundle exec rspec spec
 ```
 
 ## Design Decisions
-- why did i include the password?
-- writing in React? Why?
-- Why did I submit per query change?
-- File saver use
+I decided to parse the data into a database because it allows separation of data source/retrieval and actual use. It is possible that there could be many sources of data and having scripts to sanitize them and parse them into a database for a web application is a standard practice and felt most appropriate. In a related, more structured sense, it would be appropriate to have a service that runs periodically to refetch the rushing statistics and update the database. I designed the JsonParser to support such a use case.
+
+I wrote the front-end in React, and Redux to back it, because those are very commonly used in industry. Their modular design allows for reuse and good encapsulation. Redux also allows components themselves to be much simpler by just accepting props and having actions and reducers be the pieces that do the heavy-lifting.
+
+I decided to perform a request to the server per general query parameter change. I had considered loading more pages into the browser, but was unconvinced with the use of such schemes to move between pages. It would speed up most back and next page interactions, but the benefit is unclear in terms of code complexity. I would like to further evaluate usage to determine how much added benefit there would be for such a change, how many pages should be cached, etc.
+
+I decided to use the file-saver module to create a downloadable attachment (for the CSV download). I have used it in the past and it's a common strategy. For extremely large files, I would more thoroughly investigate the implications.
+
+I decided to use the default Puma server provided as part of Rails 6.0. I would consider using another server like Unicorn or Passenger if the need arose.
 
 ## Future Improvements
 * Remove the passwords from the set-up script (and config/database.yml). For this submission, it's reasonable, but in a production system, I would be using Vault (or some other credential storage service)
@@ -140,3 +146,4 @@ bundle exec rspec spec
 * More extensive and explicit React testing, especially more complete Redux testing. The crux of the front-end logic is in the actions and reducers
 * Implement debouncing for the query search (could be done through a delay). It can be expensive to kick off a request per query change
 * Restructure the CSV file download to not download an attachment in-browser
+* Support parsing URL parameters directly. It would be nice to be able to search for players, and have the URL update, so that the link could be passed to someone else more seamlessly 
