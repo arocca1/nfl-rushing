@@ -10,6 +10,8 @@ RSpec.describe RushingController, type: :controller do
     let(:shaun_hill) { FactoryBot.create(:shaun_hill, team: min, position: qb) }
     let(:adrian_peterson) { FactoryBot.create(:all_day, team: min, position: rb) }
     let(:joe_banyard) { FactoryBot.create(:joe_banyard, team: jax, position: rb) }
+    let(:sf) { FactoryBot.create(:sf) }
+    let(:shaun_draughn) { FactoryBot.create(:shaun_draughn, team: sf, position: rb) }
 
     before :each do
       FactoryBot.create(:bad_rushing, player: shaun_hill)
@@ -29,19 +31,24 @@ RSpec.describe RushingController, type: :controller do
       end
 
       it 'returns with a sort order, ascending' do
-
+        get :show_stats, params: { page_num: 1, page_size: 10, sort_by: 'yards', order_dir: 'asc' }, format: format
+        expect(response.body).to eq(sort_asc_results)
       end
 
       it 'returns with a sort order, descending' do
-
+        get :show_stats, params: { page_num: 1, page_size: 10, sort_by: 'yards', order_dir: 'desc' }, format: format
+        expect(response.body).to eq(sort_desc_results)
       end
 
       it 'does not order when not a sortable column' do
-
+        get :show_stats, params: { page_num: 1, page_size: 10, sort_by: 'attempts_per_game', order_dir: 'desc' }, format: format
+        expect(response.body).to eq(all_results)
       end
 
       it 'returns with a query and sort' do
-
+        FactoryBot.create(:avg_rushing, player: shaun_draughn)
+        get :show_stats, params: { page_num: 1, page_size: 10, sort_by: 'yards', order_dir: 'asc', query: 'shaun' }, format: format
+        expect(response.body).to eq(query_sort_results)
       end
     end
 
@@ -74,17 +81,75 @@ RSpec.describe RushingController, type: :controller do
           enable_next: false,
         }.to_json
       }
+      let(:sort_asc_results) {
+        {
+          stats: [
+            format_for_output(shaun_hill),
+            format_for_output(joe_banyard),
+            format_for_output(adrian_peterson),
+          ],
+          enable_back: false,
+          enable_next: false,
+        }.to_json
+      }
+      let(:sort_desc_results) {
+        {
+          stats: [
+            format_for_output(adrian_peterson),
+            format_for_output(joe_banyard),
+            format_for_output(shaun_hill),
+          ],
+          enable_back: false,
+          enable_next: false,
+        }.to_json
+      }
+      let(:query_sort_results) {
+        {
+          stats: [
+            format_for_output(shaun_hill),
+            format_for_output(shaun_draughn),
+          ],
+          enable_back: false,
+          enable_next: false,
+        }.to_json
+      }
+
       it_behaves_like 'basic fetching of results', 'json'
 
       it 'returns results for the current page' do
+        expected_results = {
+          stats: [
+            format_for_output(joe_banyard),
+          ],
+          enable_back: true,
+          enable_next: true,
+        }.to_json
+        get :show_stats, params: { page_num: 2, page_size: 1, sort_by: 'yards', order_dir: 'asc' }, format: 'json'
+        expect(response.body).to eq(expected_results)
       end
 
       it 'disables next when at the last page' do
-
+        expected_results = {
+          stats: [
+            format_for_output(adrian_peterson),
+          ],
+          enable_back: true,
+          enable_next: false,
+        }.to_json
+        get :show_stats, params: { page_num: 3, page_size: 1, sort_by: 'yards', order_dir: 'asc' }, format: 'json'
+        expect(response.body).to eq(expected_results)
       end
 
       it 'disables back when at the first page' do
-
+        expected_results = {
+          stats: [
+            format_for_output(shaun_hill),
+          ],
+          enable_back: false,
+          enable_next: true,
+        }.to_json
+        get :show_stats, params: { page_num: 1, page_size: 1, sort_by: 'yards', order_dir: 'asc' }, format: 'json'
+        expect(response.body).to eq(expected_results)
       end
     end
 
@@ -112,6 +177,15 @@ RSpec.describe RushingController, type: :controller do
       }
       let(:query_results) {
         "#{CSV.generate_line(csv_headers_map.keys)}#{format_for_csv_output(joe_banyard, csv_headers_map)}"
+      }
+      let(:sort_asc_results) {
+        "#{CSV.generate_line(csv_headers_map.keys)}#{format_for_csv_output(shaun_hill, csv_headers_map)}#{format_for_csv_output(joe_banyard, csv_headers_map)}#{format_for_csv_output(adrian_peterson, csv_headers_map)}"
+      }
+      let(:sort_desc_results) {
+        "#{CSV.generate_line(csv_headers_map.keys)}#{format_for_csv_output(adrian_peterson, csv_headers_map)}#{format_for_csv_output(joe_banyard, csv_headers_map)}#{format_for_csv_output(shaun_hill, csv_headers_map)}"
+      }
+      let(:query_sort_results) {
+        "#{CSV.generate_line(csv_headers_map.keys)}#{format_for_csv_output(shaun_hill, csv_headers_map)}#{format_for_csv_output(shaun_draughn, csv_headers_map)}"
       }
 
       it_behaves_like 'basic fetching of results', 'csv'

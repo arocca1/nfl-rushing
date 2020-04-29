@@ -13,5 +13,9 @@ FactoryBot.define do
     factory :jax do
       name { 'JAX' }
     end
+
+    factory :sf do
+      name { 'SF' }
+    end
   end
 end

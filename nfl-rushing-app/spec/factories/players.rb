@@ -21,5 +21,11 @@ FactoryBot.define do
       team factory: :min
       position factory: :qb
     end
+
+    factory :shaun_draughn do
+      name { "Shaun Draughn" }
+      team factory: :sf
+      position factory: :rb
+    end
   end
 end
